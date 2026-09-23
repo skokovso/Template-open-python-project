@@ -12,6 +12,8 @@ data/
 data_archive/
 archive/
 enter_data/
+restore_my/
+SonologData/
 
 # Папка для больших файлов проекта (не моделей)
 big_files/
@@ -29,3 +31,7 @@ __pycache__/
 # Локальные настройки (если появятся)
 config.local.json
 .env
+# ������� ����� ������� ������
+import_analysis.xlsx
+
+_backup/
