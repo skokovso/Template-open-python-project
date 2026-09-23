@@ -35,3 +35,8 @@ config.local.json
 import_analysis.xlsx
 
 _backup/
+
+# MyStudent: runtime-данные и кэши
+uploads/
+qr_static/
+*.db
