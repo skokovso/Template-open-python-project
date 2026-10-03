@@ -4,6 +4,8 @@
 нумерованные разделы (1., 1.1., 1.1.1), таблицы, списки, жирные акценты.
 Источники: project_info/manuals/*.md; если папка пуста — USER_MANUAL*.md
 в корне проекта (поддержка старой раскладки). PDF: project_info/manuals/pdf/.
+Символы, которых нет в Arial/DejaVu (эмодзи, ✓, ⬇, ), заменяются
+печатными эквивалентами — в печати не будет пустых квадратов.
 Требует: pip install fpdf2
 Запуск: python service/docs/manuals_to_pdf.py
 """
@@ -17,6 +19,7 @@ except ImportError:
 
 
 def _find_root(start: Path) -> Path:
+    """Корень проекта: ближайший предок с .git; иначе папка скрипта."""
     for p in [start, *start.parents]:
         if (p / ".git").exists():
             return p
@@ -34,6 +37,22 @@ FONT_CANDIDATES = [
      "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
      "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"),
 ]
+
+# Замена символов, которых нет в Arial/DejaVu, на печатные эквиваленты.
+# MD-источники сохраняют эмодзи для веба; в PDF они читаются словами.
+GLYPH_REPL = [
+    ("🎯 ", ""), ("🔓 ", ""), ("📋 ", ""), ("📄 ", ""), ("✎ ", ""), ("⬇ ", ""),
+    ("👁 ", ""), ("👁", ""), ("⬇", ""), ("🎯", ""), ("🔓", ""), ("📋", ""),
+    ("📄", ""), ("✎", ""),
+    ("🗑", "[удалить]"), ("✓", "[отметка]"), ("＋", "+"),
+]
+
+
+def sanitize(text: str) -> str:
+    for old, new in GLYPH_REPL:
+        text = text.replace(old, new)
+    return (text.replace("  ", " ").replace(" ;", ";")
+                .replace(" ,", ",").replace("( ", "(").replace(" )", ")"))
 
 
 class ManualPDF(FPDF):
@@ -149,7 +168,7 @@ def parse_md(text):
 
 
 def render(md_path: Path, pdf_path: Path):
-    blocks = parse_md(md_path.read_text(encoding="utf-8"))
+    blocks = parse_md(sanitize(md_path.read_text(encoding="utf-8")))
     doc = ManualPDF(md_path.stem)
     reg, bold, mono = next((f for f in FONT_CANDIDATES if Path(f[0]).exists()),
                            FONT_CANDIDATES[0])
