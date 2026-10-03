@@ -6,7 +6,9 @@
     python service/docs/make_docs.py --force    переписать все из DOCS
 Раскладка: корень — README, AI_BRIEF, CHANGELOG, ARCHITECTURE, DIGEST;
 project_info/manuals/ — руководства пользователей (PDF: manuals_to_pdf.py).
-Порядок работы: скелеты созданы один раз → тексты правятся ЗДЕСЬ → --force.
+Запуск:  python service/docs/make_docs.py   затем  python service/docs/manuals_to_pdf.py
+Обычный запуск перезаписывает все файлы из DOCS: генератор — источник правды,
+вручную документы не правятся. Бережный режим: --only-missing.
 """
 from __future__ import annotations
 
@@ -161,27 +163,26 @@ DOCS["manuals/USER_MANUAL.md"] = [
 
 
 def main() -> None:
-    force = "--force" in sys.argv
+    only_missing = "--only-missing" in sys.argv
     MANUALS_DIR.mkdir(parents=True, exist_ok=True)
     created = skipped = 0
-    for rel, lines in DOCS.items():
-        if rel.startswith("manuals/"):
-            path = MANUALS_DIR / rel[len("manuals/"):]
-        else:
-            path = BASE_DIR / rel
+    for name, lines in DOCS.items():
+        path = MANUALS_DIR / name if name.startswith("USER_MANUAL") else BASE_DIR / name
         existed = path.exists()
-        if existed and not force:
-            print(f"— пропущен (уже есть): {rel}")
+        if existed and only_missing:
+            print(f"— пропущен (уже есть): {name}")
             skipped += 1
             continue
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-        print(f"✅ {'переписан' if existed else 'создан'}: {rel}")
+        print(f"✅ {'переписан' if existed else 'создан'}: {path.relative_to(BASE_DIR)}"
+              f" ({len(lines)} строк)")
         created += 1
     print()
     print(f"Готово: создано/переписано {created}, пропущено {skipped}.")
-    print("Тексты документов правятся в словаре DOCS внутри make_docs.py,")
-    print("затем:  python service/docs/make_docs.py --force")
+    print("Тексты правятся ТОЛЬКО в словаре DOCS этого файла.")
+    print("Бережный режим (не трогать существующее): --only-missing.")
+    print("PDF руководств:  python service/docs/manuals_to_pdf.py")
 
 
 if __name__ == "__main__":

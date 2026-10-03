@@ -1,23 +1,29 @@
-# Шаблон Python-проекта
+# ЗАПОЛНИТЬ: название проекта
 
-Скелет для новых проектов: данные, служебные скрипты и документация
-отделены от боевого кода с первого дня.
+ЗАПОЛНИТЬ: один абзац — что это, зачем, для кого.
+
+## Быстрый старт
+1. `python -m venv venv`, затем `pip install -r requirements.txt`.
+2. Скопировать `.env.example` в `.env`, заполнить значения.
+3. ЗАПОЛНИТЬ: команда запуска и адрес/порт.
 
 ## Структура
-- корень — боевой код (точка входа app.py/main.py и модули);
-- `data/` — данные рантайма (в .gitignore): db, uploads, exports, personal, big_files, reports, logs, temp;
-- `service/` — служебное: migrations, fixes, deploy, tools, docs; запуск ТОЛЬКО через `python service/run.py service/...`;
-- `project_info/manuals/` — рукописная документация для людей;
-- `project_info/ai_pack/` — генерируемая упаковка для ИИ (в .gitignore); генератор — `service/docs/ai_pack.py`;
+- корень — боевой код (точка входа и модули);
+- `data/` — данные рантайма (в .gitignore): db, uploads, exports,
+  personal, big_files, reports, logs, temp;
+- `service/` — служебное: migrations, fixes, deploy, tools, docs;
+  запуск ТОЛЬКО через `python service/run.py service/...`;
+- `project_info/manuals/` — руководства пользователей (md + pdf);
+- `project_info/ai_pack/` — упаковка для ИИ (`service/docs/ai_pack.py`);
 - `tests/` — тесты.
 
-## Старт нового проекта
-1. Клонируйте шаблон под новым именем, удалите `.git`, сделайте `git init`.
-2. `python -m venv venv`, `pip install -r requirements.txt`.
-3. Скопируйте `.env.example` в `.env`, заполните.
-4. Боевой код — в корень, служебное — в `service/`.
+## Документация
+- `AI_BRIEF.md` — правила и табу для ИИ-ассистентов;
+- `CHANGELOG.md` — история версий (строка на версию);
+- `ARCHITECTURE.md` — устройство, схема БД, потоки данных;
+- `DIGEST.md` — короткий дайджест для быстрого входа в контекст;
+- руководства — в `project_info/manuals/`, PDF собирает
+  `service/docs/manuals_to_pdf.py`.
 
-## Документация и ИИ
-- `AI_BRIEF.md` — договорённости и табу, обновлять каждую версию;
-- `CHANGELOG.md` — строка на версию;
-- упаковка для чата: `python service/docs/ai_pack.py`, грузить по MANIFEST из `project_info/ai_pack/`.
+Все документы правятся в `service/docs/make_docs.py` (словарь DOCS)
+и раскладываются командой с флагом `--force`.
